@@ -482,7 +482,7 @@ function identifiantDepuisNom(prenom, nom) {
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // enlève les accents
     .toLowerCase()
     .replace(/[^a-z0-9]/g, ''); // enlève espaces, tirets, apostrophes...
-  return `${nettoyer(prenom)}.${nettoyer(nom)}@pn-novalife.local`;
+  return `${nettoyer(prenom)}.${nettoyer(nom)}@pn-novalife.fr`;
 }
 
 $('#tab-login').addEventListener('click', () => setAuthTab('login'));
