@@ -412,6 +412,10 @@ tbody tr:hover td:first-child{color:var(--brass);}
     </form>
 
     <form id="signup-form" style="display:none;">
+      <div class="auth-tabs" style="margin-bottom:16px;">
+        <button type="button" class="btn" id="signup-type-citoyen">Citoyen</button>
+        <button type="button" class="btn" id="signup-type-police">Policier</button>
+      </div>
       <div class="field">
         <label for="signup-prenom">Prénom RP</label>
         <input type="text" id="signup-prenom" required autocomplete="off">
@@ -424,14 +428,14 @@ tbody tr:hover td:first-child{color:var(--brass);}
         <label for="signup-password">Mot de passe (6 caractères min.)</label>
         <input type="password" id="signup-password" required autocomplete="new-password" minlength="6">
       </div>
-      <div class="field">
-        <label for="signup-code">Code d'accès</label>
-        <input type="text" id="signup-code" required autocomplete="off">
+      <div class="field" id="signup-code-field">
+        <label for="signup-code">Code d'accès policier</label>
+        <input type="text" id="signup-code" autocomplete="off">
       </div>
       <button type="submit" class="btn btn-brass btn-full" id="signup-submit-btn">Créer mon compte</button>
     </form>
 
-    <p class="login-foot">Accès strictement réservé aux agents de la Police Nationale.<br>Perte d'accès : contacte la Direction.</p>
+    <p class="login-foot">Citoyens : consultez votre identité et vos amendes.<br>Policiers : accès réservé, code d'accès requis.</p>
   </div>
 </div>
 
@@ -463,23 +467,36 @@ tbody tr:hover td:first-child{color:var(--brass);}
     </div>
     <hr>
 
-    <div class="nav-item active" data-view="citoyens">
+    <div class="nav-item role-police active" data-view="citoyens">
       <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span>Citoyens</span>
     </div>
-    <div class="nav-item" data-view="interpellation">
+    <div class="nav-item role-police" data-view="interpellation">
       <svg class="icon" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg>
       <span>Nouvelle interpellation</span>
     </div>
-    <div class="nav-item locked-commandement" data-view="fiches-s">
+    <div class="nav-item role-police" data-view="amendes">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10"/><path d="M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1.1 3 2.5-1.3 2-3 2.5-3 1.1-3 2.5 1.3 2.5 3 2.5 3-1.1 3-2.5"/></svg>
+      <span>Amendes en cours</span>
+    </div>
+    <div class="nav-item role-police locked-commandement" data-view="fiches-s">
       <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
       <span>Fichés S</span>
       <svg class="icon icon-sm lock-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     </div>
-    <div class="nav-item locked-direction" data-view="admin">
+    <div class="nav-item role-police locked-direction" data-view="admin">
       <svg class="icon" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
       <span>Administration</span>
       <svg class="icon icon-sm lock-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+
+    <div class="nav-item role-citoyen active" data-view="mon-identite" style="display:none;">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+      <span>Mon identité</span>
+    </div>
+    <div class="nav-item role-citoyen" data-view="mon-casier" style="display:none;">
+      <svg class="icon" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h6"/></svg>
+      <span>Mon casier</span>
     </div>
 
     <div class="sidebar-user">
@@ -641,6 +658,48 @@ tbody tr:hover td:first-child{color:var(--brass);}
       </div>
     </section>
 
+    <!-- ---------- VUE AMENDES EN COURS ---------- -->
+    <section class="view" id="view-amendes">
+      <div class="page-head">
+        <div>
+          <h2>Amendes en cours</h2>
+          <p>Amendes non réglées, tous citoyens confondus. Valide un paiement au guichet en un clic.</p>
+        </div>
+        <div class="page-head-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10"/><path d="M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1.1 3 2.5-1.3 2-3 2.5-3 1.1-3 2.5 1.3 2.5 3 2.5 3-1.1 3-2.5"/></svg></div>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Citoyen</th><th>Montant</th><th>Motif</th><th>Date</th><th></th></tr></thead>
+          <tbody id="amendes-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------- VUE CITOYEN : MON IDENTITÉ ---------- -->
+    <section class="view" id="view-mon-identite">
+      <div class="page-head">
+        <div>
+          <h2>Mon identité</h2>
+          <p>Les informations enregistrées à ton sujet par la Police Nationale.</p>
+        </div>
+        <div class="page-head-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg></div>
+      </div>
+      <div class="card" id="mon-identite-card"></div>
+    </section>
+
+    <!-- ---------- VUE CITOYEN : MON CASIER ---------- -->
+    <section class="view" id="view-mon-casier">
+      <div class="page-head">
+        <div>
+          <h2>Mon casier</h2>
+          <p>L'historique de tes interpellations et l'état de tes amendes.</p>
+        </div>
+        <div class="page-head-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h6"/></svg></div>
+      </div>
+      <div class="card" id="mon-casier-total"></div>
+      <div class="card" id="mon-casier-list"></div>
+    </section>
+
   </main>
 </div>
 
@@ -663,9 +722,11 @@ const NIVEAU_COMMANDEMENT = 5;  // Capitaine et +
 // ============================================================
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let moi = null;        // { id, matricule, nom, prenom, grade: {nom, niveau} }
+let moi = null;        // { id, matricule, nom, prenom, grade: {nom, niveau} } — si policier
+let monCitoyen = null;  // fiche citoyen liée — si compte citoyen
+let monRole = null;     // 'police' | 'citoyen'
 let infractionsCache = [];
-let citoyenCourant = null; // citoyen affiché dans le panneau détail
+let citoyenCourant = null; // citoyen affiché dans le panneau détail (côté police)
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -719,6 +780,20 @@ function setAuthTab(which) {
 }
 setAuthTab('login');
 
+let signupType = 'citoyen';
+function setSignupType(type) {
+  signupType = type;
+  $('#signup-type-citoyen').classList.toggle('btn-brass', type === 'citoyen');
+  $('#signup-type-citoyen').classList.toggle('btn-outline', type !== 'citoyen');
+  $('#signup-type-police').classList.toggle('btn-brass', type === 'police');
+  $('#signup-type-police').classList.toggle('btn-outline', type !== 'police');
+  $('#signup-code-field').style.display = type === 'police' ? 'block' : 'none';
+  $('#signup-code').required = type === 'police';
+}
+$('#signup-type-citoyen').addEventListener('click', () => setSignupType('citoyen'));
+$('#signup-type-police').addEventListener('click', () => setSignupType('police'));
+setSignupType('citoyen');
+
 $('#login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const prenom = $('#login-prenom').value.trim();
@@ -757,7 +832,8 @@ $('#signup-form').addEventListener('submit', async (e) => {
   errBox.style.display = 'none';
   okBox.style.display = 'none';
 
-  if (!prenom || !nom || !password || !code) return;
+  if (!prenom || !nom || !password) return;
+  if (signupType === 'police' && !code) return;
 
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Création…';
@@ -775,12 +851,13 @@ $('#signup-form').addEventListener('submit', async (e) => {
   }
 
   // À ce stade signUp a aussi ouvert une session (confirmation email désactivée),
-  // on peut donc appeler la fonction qui relie ce compte à une fiche policier.
-  const { data: resultat, error: rpcError } = await sb.rpc('inscrire_agent', {
-    p_nom: nom,
-    p_prenom: prenom,
-    p_code: code,
-  });
+  // on peut donc appeler la fonction qui relie ce compte à une fiche policier ou citoyen.
+  const rpcName = signupType === 'police' ? 'inscrire_agent' : 'inscrire_citoyen';
+  const rpcParams = signupType === 'police'
+    ? { p_nom: nom, p_prenom: prenom, p_code: code }
+    : { p_nom: nom, p_prenom: prenom };
+
+  const { data: resultat, error: rpcError } = await sb.rpc(rpcName, rpcParams);
 
   if (rpcError || !resultat || resultat.startsWith('ERREUR')) {
     errBox.textContent = rpcError ? rpcError.message : resultat.replace('ERREUR: ', '');
@@ -790,8 +867,10 @@ $('#signup-form').addEventListener('submit', async (e) => {
     return;
   }
 
-  const matricule = resultat.split(':')[1];
-  okBox.textContent = `Compte créé ! Ton matricule est ${matricule}. Connexion en cours…`;
+  const matricule = resultat.includes(':') ? resultat.split(':')[1] : null;
+  okBox.textContent = matricule
+    ? `Compte créé ! Ton matricule est ${matricule}. Connexion en cours…`
+    : `Compte créé ! Connexion en cours…`;
   okBox.style.display = 'block';
   $('#signup-form').reset();
   setTimeout(bootAfterLogin, 900);
@@ -806,21 +885,36 @@ async function bootAfterLogin() {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return showLogin();
 
-  const { data: agent, error } = await sb
+  const { data: agent } = await sb
     .from('agents')
     .select('id, matricule, nom, prenom, actif, grade:grade_id (nom, niveau)')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
-  if (error || !agent || !agent.actif) {
-    $('#login-error').textContent = "Ce compte n'est pas (ou plus) un compte policier actif. Contacte la Direction.";
-    $('#login-error').style.display = 'block';
-    await sb.auth.signOut();
-    return showLogin();
+  if (agent && agent.actif) {
+    moi = agent;
+    monRole = 'police';
+    return showAppPolice();
   }
 
-  moi = agent;
-  showApp();
+  const { data: citoyen } = await sb
+    .from('citoyens')
+    .select('*')
+    .eq('auth_id', user.id)
+    .maybeSingle();
+
+  if (citoyen) {
+    monCitoyen = citoyen;
+    monRole = 'citoyen';
+    return showAppCitoyen();
+  }
+
+  $('#login-error').textContent = agent
+    ? "Ce compte n'est pas (ou plus) un compte policier actif. Contacte la Direction."
+    : "Ce compte n'est relié à aucune fiche. Contacte la Direction.";
+  $('#login-error').style.display = 'block';
+  await sb.auth.signOut();
+  return showLogin();
 }
 
 function showLogin() {
@@ -828,9 +922,11 @@ function showLogin() {
   $('#app-shell').classList.remove('active');
 }
 
-function showApp() {
+function showAppPolice() {
   $('#login-screen').classList.add('hidden');
   $('#app-shell').classList.add('active');
+  $$('.role-police').forEach(el => el.style.display = '');
+  $$('.role-citoyen').forEach(el => el.style.display = 'none');
 
   $('#sidebar-name').textContent = `${moi.prenom} ${moi.nom}`;
   $('#sidebar-grade').textContent = `${moi.grade.nom} · ${moi.matricule}`;
@@ -846,6 +942,19 @@ function showApp() {
 
   loadInfractions();
   goToView('citoyens');
+}
+
+function showAppCitoyen() {
+  $('#login-screen').classList.add('hidden');
+  $('#app-shell').classList.add('active');
+  $$('.role-citoyen').forEach(el => el.style.display = '');
+  $$('.role-police').forEach(el => el.style.display = 'none');
+
+  $('#sidebar-name').textContent = `${monCitoyen.prenom} ${monCitoyen.nom}`;
+  $('#sidebar-grade').textContent = 'Compte citoyen';
+  $('#sidebar-avatar').textContent = (monCitoyen.prenom[0] || '?').toUpperCase() + (monCitoyen.nom[0] || '').toUpperCase();
+
+  goToView('mon-identite');
 }
 
 // ---------------- MENU MOBILE ----------------
@@ -881,6 +990,9 @@ function goToView(name) {
   if (name === 'interpellation') resetInterpellationForm();
   if (name === 'fiches-s') loadFichesS();
   if (name === 'admin') { loadAgents(); loadCodes(); loadInfractionsAdmin(); }
+  if (name === 'amendes') loadAmendes();
+  if (name === 'mon-identite') loadMonIdentite();
+  if (name === 'mon-casier') loadMonCasier();
 }
 
 // ---------------- INFRACTIONS (référentiel) ----------------
@@ -1254,6 +1366,119 @@ async function loadInfractionsAdmin() {
     toast("Infraction mise à jour.");
     loadInfractions();
   }));
+}
+
+// ---------------- AMENDES EN COURS (policiers) ----------------
+
+async function loadAmendes() {
+  const { data, error } = await sb
+    .from('interpellations')
+    .select('*, citoyen:citoyen_id (nom, prenom)')
+    .eq('paye', false)
+    .eq('statut', 'enregistree')
+    .order('created_at', { ascending: false });
+
+  const tbody = $('#amendes-tbody');
+  if (error) { tbody.innerHTML = emptyState('Erreur de chargement.', 5); return; }
+  if (!data.length) { tbody.innerHTML = emptyState('Aucune amende en attente de paiement.', 5); return; }
+
+  tbody.innerHTML = data.map(i => {
+    const motifs = i.infraction_ids
+      .map(id => infractionsCache.find(f => f.id === id)?.titre)
+      .filter(Boolean)
+      .join(', ');
+    const date = new Date(i.created_at).toLocaleDateString('fr-FR');
+    return `
+      <tr>
+        <td>${i.citoyen ? `${i.citoyen.prenom} ${i.citoyen.nom}` : 'Citoyen supprimé'}</td>
+        <td><strong>${euros(i.montant_total)}</strong></td>
+        <td style="max-width:280px;font-size:.82rem;">${motifs}</td>
+        <td>${date}</td>
+        <td><button class="btn btn-brass valider-paiement-btn" data-id="${i.id}">Marquer payée</button></td>
+      </tr>
+    `;
+  }).join('');
+
+  $$('.valider-paiement-btn', tbody).forEach(btn => btn.addEventListener('click', async () => {
+    const confirme = confirm("Confirmer que cette amende a bien été payée ? Cette action est enregistrée avec ton nom.");
+    if (!confirme) return;
+    const { error } = await sb.from('interpellations').update({
+      paye: true,
+      paye_le: new Date().toISOString(),
+      paye_par: moi.id,
+    }).eq('id', btn.dataset.id);
+    if (error) return toast("Erreur lors de la validation.");
+    toast("Paiement validé.");
+    loadAmendes();
+  }));
+}
+
+// ---------------- ESPACE CITOYEN ----------------
+
+async function loadMonIdentite() {
+  const c = monCitoyen;
+  const box = $('#mon-identite-card');
+  box.innerHTML = `
+    <h3 style="margin-top:0;">${c.prenom} ${c.nom} ${c.fiche_s ? '<span class="badge badge-s">FICHÉ S</span>' : ''}</h3>
+    <div class="grid-2" style="margin-top:16px;">
+      <div><div style="font-size:.78rem;color:var(--ink-soft);">Date de naissance</div><div style="font-weight:600;">${c.date_naissance ?? 'Non renseignée'}</div></div>
+      <div><div style="font-size:.78rem;color:var(--ink-soft);">Téléphone</div><div style="font-weight:600;">${c.telephone ?? 'Non renseigné'}</div></div>
+      <div style="grid-column:1/-1;"><div style="font-size:.78rem;color:var(--ink-soft);">Adresse</div><div style="font-weight:600;">${c.adresse ?? 'Non renseignée'}</div></div>
+    </div>
+    <p style="font-size:.8rem;color:var(--ink-soft);margin-top:18px;">Ces informations sont gérées par la Police Nationale. Pour une correction, contacte un policier.</p>
+  `;
+}
+
+async function loadMonCasier() {
+  const { data, error } = await sb
+    .from('interpellations')
+    .select('*, agent:agent_id (nom, prenom, matricule)')
+    .eq('citoyen_id', monCitoyen.id)
+    .order('created_at', { ascending: false });
+
+  const totalBox = $('#mon-casier-total');
+  const listBox = $('#mon-casier-list');
+
+  if (error) { listBox.innerHTML = emptyState('Erreur de chargement.'); totalBox.innerHTML = ''; return; }
+
+  const impayees = data.filter(i => !i.paye && i.statut !== 'annulee');
+  const totalDu = impayees.reduce((s, i) => s + i.montant_total, 0);
+
+  totalBox.innerHTML = totalDu > 0
+    ? `<div class="total-box" style="margin-top:0;"><div>
+         <div style="font-size:.85rem;color:var(--brass-light);">Amendes impayées : ${impayees.length}</div>
+       </div><div class="amount">${euros(totalDu)}</div></div>`
+    : `<div style="display:flex;align-items:center;gap:10px;color:var(--green);font-weight:600;">
+         <svg class="icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+         Aucune amende en attente de paiement.
+       </div>`;
+
+  if (!data.length) { listBox.innerHTML = emptyState('Casier vierge.'); return; }
+
+  listBox.innerHTML = data.map(i => {
+    const titres = i.infraction_ids
+      .map(id => infractionsCache.find(f => f.id === id)?.titre)
+      .filter(Boolean)
+      .join(', ');
+    const date = new Date(i.created_at).toLocaleDateString('fr-FR');
+    const statutBadge = i.statut === 'annulee'
+      ? '<span class="badge badge-s">ANNULÉE</span>'
+      : i.paye
+        ? '<span class="badge badge-ok">PAYÉE</span>'
+        : '<span class="badge badge-s">IMPAYÉE</span>';
+    return `
+      <div style="border-bottom:1px solid var(--paper-dim);padding:12px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+          <strong style="font-size:.9rem;">${date} — ${euros(i.montant_total)}</strong>
+          ${statutBadge}
+        </div>
+        <div style="font-size:.85rem;margin-top:4px;">${titres}</div>
+        <div style="font-size:.78rem;color:var(--ink-soft);margin-top:2px;">
+          ${i.lieu ? i.lieu + ' · ' : ''}Agent ${i.agent.prenom} ${i.agent.nom}
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 // ---------------- BOOT ----------------
