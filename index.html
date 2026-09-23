@@ -324,7 +324,7 @@ tr.row-click:hover{background:var(--paper-dim);}
           <button class="btn btn-outline" id="toggle-new-citoyen">+ Nouvelle identité</button>
         </div>
 
-        <form id="new-citoyen-form" id="new-citoyen-panel" style="display:none;border:1px solid var(--paper-dim);border-radius:3px;padding:16px;margin-bottom:16px;">
+        <form id="new-citoyen-form" style="display:none;border:1px solid var(--paper-dim);border-radius:3px;padding:16px;margin-bottom:16px;">
           <div class="grid-2">
             <div class="field-inline"><label>Nom</label><input id="nc-nom" required></div>
             <div class="field-inline"><label>Prénom</label><input id="nc-prenom" required></div>
@@ -662,13 +662,13 @@ $('#new-citoyen-form').addEventListener('submit', async (e) => {
   if (error) return toast("Erreur lors de la création de l'identité.");
   toast(`Identité créée : ${data.prenom} ${data.nom}`);
   $('#new-citoyen-form').reset();
-  $('#new-citoyen-panel').style.display = 'none';
+  $('#new-citoyen-form').style.display = 'none';
   refreshCitoyensList();
   openCitoyen(data.id);
 });
 
 $('#toggle-new-citoyen').addEventListener('click', () => {
-  const panel = $('#new-citoyen-panel');
+  const panel = $('#new-citoyen-form');
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
 });
 
