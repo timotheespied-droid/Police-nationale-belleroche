@@ -1,0 +1,67 @@
+# Police Nationale — Nova Life
+
+Portail interne pour la Police Nationale d'un serveur Nova Life : gestion des identités des joueurs, interpellations avec calcul automatique de l'amende et des sanctions à partir de ta législation RP, casier judiciaire, fichés S, et gestion des comptes/grades des policiers.
+
+⚠️ Ceci est un outil de **roleplay**. Toutes les données (identités, casiers, fichés S) concernent des personnages de jeu, pas des personnes réelles.
+
+## Comment ça marche
+
+- Le site est **un seul fichier `index.html`**, autonome (mise en page + logique dedans), à héberger gratuitement sur **GitHub Pages**.
+- Les données (citoyens, casiers, agents…) sont stockées sur **Supabase** (base Postgres + authentification), gratuit pour ce volume d'usage.
+- Les policiers se connectent avec leur **prénom + nom RP** (pas un email). En coulisses, un identifiant technique est généré automatiquement — personne n'a besoin de le voir ou de le taper.
+- Les nouveaux comptes se créent **depuis le site lui-même**, via un **code d'accès** donné par la Direction. Ce code n'est jamais visible dans le code source du site : il est vérifié côté base de données par une fonction dédiée.
+- La sécurité est assurée par des règles **RLS** (Row Level Security) : même si le site est public, personne ne peut lire ou écrire les données sans un compte policier actif et le bon niveau de grade.
+
+## 1. Réinitialiser la base Supabase
+
+1. Va sur ton projet Supabase → **SQL Editor** → **New query** (une page bien vide).
+2. Colle **tout** le contenu de `sql/schema.sql` (ce script efface proprement tout ce qui existait avant et repart de zéro, avec un code d'accès de démarrage déjà prêt).
+3. Clique **Run**.
+
+## 2. Créer ton premier compte (Commissaire Général)
+
+1. Ouvre ton site (le lien GitHub Pages).
+2. Clique sur l'onglet **"Créer un compte"**.
+3. Remplis Prénom RP / Nom RP / Mot de passe, et dans **"Code d'accès"** tape : `DEMARRAGE-2026`
+4. Clique **Créer mon compte**. Tu es automatiquement connecté avec le grade **Commissaire Général** et un matricule généré automatiquement.
+
+Ce code ne peut servir qu'**une seule fois** — personne d'autre ne pourra l'utiliser après toi.
+
+## 3. Ajouter d'autres policiers
+
+Depuis l'onglet **Administration** (visible uniquement pour les grades Commissaire et +) :
+
+1. Section **"Codes d'accès"** → crée un code (ex : `GPX-2026`) en choisissant le grade qu'il donnera et le nombre de personnes qui pourront l'utiliser.
+2. Donne ce code au policier concerné en privé (jamais publiquement — quiconque le connaît peut créer un compte avec le grade associé).
+3. Le policier va sur le site → "Créer un compte" → renseigne son prénom/nom RP + le code → son compte est créé automatiquement avec le bon grade et un matricule auto-généré.
+
+Tu peux ensuite ajuster le grade de n'importe quel agent ou le désactiver depuis la section **"Agents"** du même onglet.
+
+## 4. Déployer sur GitHub Pages
+
+Un seul fichier à gérer : `index.html`.
+
+1. Sur ton dépôt GitHub, remplace le contenu de `index.html` par celui fourni (ou dépose-le à la racine si le dépôt est vide).
+2. Commit changes.
+3. Si tu as encore des fichiers `style.css`, `config.js` ou `app.js` séparés dans ton dépôt, supprime-les : ils ne sont plus utilisés.
+4. **Settings → Pages** : source = branche `main`, dossier `/ (root)`.
+5. Attends 1-2 minutes, puis ouvre ton site (Ctrl+Maj+R si l'ancienne version s'affiche encore).
+
+## 5. Utilisation au quotidien
+
+- **Citoyens** : rechercher une identité, en créer une nouvelle si le joueur n'existe pas encore, consulter le casier judiciaire complet d'une personne.
+- **Nouvelle interpellation** : choisir le citoyen, cocher les infractions constatées (regroupées par titre de la législation) → l'amende totale, les points et les sanctions complémentaires (garde à vue, suspension, confiscation…) se calculent automatiquement.
+- **Fichés S** : réservé au Commandement (Capitaine et +) — liste et gestion des individus signalés.
+- **Administration** (Commissaire et +) : gérer les grades/statuts des agents, créer des codes d'accès, ajuster le référentiel d'infractions si la législation évolue.
+
+## 6. Grades gérés (du plus haut au plus bas)
+
+Commissaire Général · Commissaire Divisionnaire · Commissaire · Commandant Divisionnaire · Commandant · Capitaine · Major · Brigadier-Chef · Brigadier · Gardien de la Paix
+
+Les seuils de permissions sont définis dans `sql/schema.sql` (fonction `mon_niveau()`) — modifiables si ta hiérarchie interne évolue.
+
+## Limites actuelles / pistes d'évolution
+
+- Pas encore de photo de profil pour les citoyens (facile à ajouter via Supabase Storage).
+- Pas de journal d'audit détaillé (qui a modifié quoi) — seul l'agent créateur d'une fiche citoyen est tracé.
+- Le montant de l'amende appliqué est actuellement le maximum de la fourchette légale ; ajustable infraction par infraction dans le référentiel (onglet Administration).
