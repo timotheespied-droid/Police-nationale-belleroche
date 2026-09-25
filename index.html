@@ -1063,32 +1063,102 @@ async function openCitoyen(id) {
   const { data: c, error } = await sb.from('citoyens').select('*').eq('id', id).single();
   if (error) return toast("Impossible de charger cette fiche.");
   citoyenCourant = c;
+  renderCitoyenDetail(c, false);
+  loadCasier(c.id);
+}
 
+function renderCitoyenDetail(c, editMode) {
   const box = $('#citoyen-detail');
   box.style.display = 'block';
+  const estDirection = moi.grade.niveau >= NIVEAU_DIRECTION;
+  const estCommandement = moi.grade.niveau >= NIVEAU_COMMANDEMENT;
+
+  if (editMode) {
+    box.innerHTML = `
+      <h3 style="margin-top:0;">Modifier la fiche</h3>
+      <form id="edit-citoyen-form">
+        <div class="grid-2">
+          <div class="field-inline"><label>Nom</label><input id="ec-nom" value="${c.nom}" required></div>
+          <div class="field-inline"><label>Prénom</label><input id="ec-prenom" value="${c.prenom}" required></div>
+          <div class="field-inline"><label>Date de naissance</label><input type="date" id="ec-naissance" value="${c.date_naissance ?? ''}"></div>
+          <div class="field-inline"><label>Téléphone</label><input id="ec-telephone" value="${c.telephone ?? ''}"></div>
+        </div>
+        <div class="field-inline" style="margin-top:12px;"><label>Adresse</label><input id="ec-adresse" value="${c.adresse ?? ''}"></div>
+        <div style="display:flex;gap:8px;margin-top:16px;">
+          <button type="submit" class="btn btn-brass">Enregistrer</button>
+          <button type="button" class="btn btn-outline" id="btn-annuler-edition">Annuler</button>
+        </div>
+      </form>
+    `;
+    $('#edit-citoyen-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        nom: $('#ec-nom').value.trim(),
+        prenom: $('#ec-prenom').value.trim(),
+        date_naissance: $('#ec-naissance').value || null,
+        telephone: $('#ec-telephone').value.trim() || null,
+        adresse: $('#ec-adresse').value.trim() || null,
+        updated_at: new Date().toISOString(),
+      };
+      const { error } = await sb.from('citoyens').update(payload).eq('id', c.id);
+      if (error) return toast("Erreur lors de la modification.");
+      toast("Fiche mise à jour.");
+      refreshCitoyensList();
+      openCitoyen(c.id);
+    });
+    $('#btn-annuler-edition').addEventListener('click', () => renderCitoyenDetail(c, false));
+    return;
+  }
+
   box.innerHTML = `
     <h3>${c.prenom} ${c.nom} ${c.fiche_s ? '<span class="badge badge-s">FICHÉ S</span>' : ''}</h3>
     <p class="meta" style="color:var(--ink-soft);font-size:.85rem;margin-top:-6px;">
       Né(e) le ${c.date_naissance ?? '—'} · ${c.telephone ?? 'tél. inconnu'} · ${c.adresse ?? 'adresse inconnue'}
     </p>
-    <div style="display:flex;gap:8px;margin:14px 0;">
+    <div class="detail-actions">
       <button class="btn btn-outline" id="btn-nouvelle-interpellation-depuis-fiche">+ Interpellation</button>
       <button class="btn btn-outline locked-commandement" id="btn-toggle-fiche-s">${c.fiche_s ? 'Lever le fiché S' : 'Marquer fiché S'}</button>
+      <button class="btn btn-outline locked-direction" id="btn-modifier-citoyen">Modifier</button>
+      <button class="btn btn-danger locked-direction" id="btn-supprimer-citoyen">Supprimer</button>
     </div>
     <h4 style="margin-bottom:8px;">Casier judiciaire</h4>
     <div id="casier-list">${loadingState("Chargement…")}</div>
   `;
-  if (moi.grade.niveau < NIVEAU_COMMANDEMENT) {
-    $('#btn-toggle-fiche-s').classList.add('locked');
+  if (!estCommandement) $('#btn-toggle-fiche-s').classList.add('locked');
+  if (!estDirection) {
+    $('#btn-modifier-citoyen').classList.add('locked');
+    $('#btn-supprimer-citoyen').classList.add('locked');
   }
 
   $('#btn-nouvelle-interpellation-depuis-fiche').addEventListener('click', () => {
     goToView('interpellation');
     selectCitoyenForInterpellation(c);
   });
-  $('#btn-toggle-fiche-s').addEventListener('click', () => toggleFicheS(c));
+  $('#btn-toggle-fiche-s').addEventListener('click', () => {
+    if (!estCommandement) return toast("Réservé au Commandement et +.");
+    toggleFicheS(c);
+  });
+  $('#btn-modifier-citoyen').addEventListener('click', () => {
+    if (!estDirection) return toast("Réservé à la Direction (Commissaire et +).");
+    renderCitoyenDetail(c, true);
+  });
+  $('#btn-supprimer-citoyen').addEventListener('click', () => {
+    if (!estDirection) return toast("Réservé à la Direction (Commissaire et +).");
+    supprimerCitoyen(c);
+  });
+}
 
-  loadCasier(c.id);
+async function supprimerCitoyen(c) {
+  const confirme = confirm(
+    `Supprimer définitivement la fiche de ${c.prenom} ${c.nom} ?\n\nSon casier judiciaire complet (toutes ses interpellations) sera aussi supprimé. Cette action est irréversible.`
+  );
+  if (!confirme) return;
+  const { error } = await sb.from('citoyens').delete().eq('id', c.id);
+  if (error) return toast("Erreur lors de la suppression (droits insuffisants ?).");
+  toast("Fiche supprimée.");
+  $('#citoyen-detail').style.display = 'none';
+  citoyenCourant = null;
+  refreshCitoyensList();
 }
 
 async function toggleFicheS(c) {
